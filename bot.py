@@ -11,8 +11,6 @@ from selenium.webdriver import DesiredCapabilities
 
 from secrets import QC_EMAIL, QC_PASSWORD, QC_URL
 
-MAX_RETRIES = 5
-
 
 class NetflixQCBot:
     def __init__(self):
@@ -42,7 +40,7 @@ class NetflixQCBot:
     def click_pick_a_task(self):
         print(' ' * 60, end='\r')
         print(' Going to the picking tasks area ...', end='\r')
-        sleep(3)
+        sleep(5)
         pick_a_task = self.driver.find_element_by_xpath(
             '//*[@id="appContainer"]/div/div[2]/div/div[1]/div[2]/div/button'
         )
@@ -52,11 +50,10 @@ class NetflixQCBot:
         try:
             element = self.driver.find_element_by_xpath(xpath)
         except NoSuchElementException:
-            return False
+            element = False
         return element
 
     def check_for_tasks(self):
-        retries = 0
         found_tasks = False
         number_of_iterations = 0
         while not found_tasks:
@@ -84,41 +81,33 @@ class NetflixQCBot:
 
             if check_for_tasks:
                 check_for_tasks.click()
-            elif retries < MAX_RETRIES:
-                retries += 1
-                print(' ' * 60, end='\r')
-                print(
-                    ' Cannot find the "Check for tasks button", retrying (#{retries}) ...',
-                    end='\r',
+                # wait for the reload, just for safety
+                sleep(0.5)
+
+                take_task = self.get_if_exists_by_xpath(
+                    '//*[@id="appContainer"]/div/div[2]/div/div/div[2]/div/div/div[2]'
+                    '/div[3]/button'
                 )
+                if take_task:
+                    take_task.click()
+                    print(' ' * 60, end='\r')
+                    print(' Hurray! Found tasks!!!')
+                    playsound('./sounds/three-beeps.mp3')
+                    found_tasks = True
+                else:
+                    print(' ' * 60, end='\r')
+                    print(
+                        f' (#{number_of_iterations}) No tasks found... trying again!',
+                        end='\r',
+                    )
             else:
                 print('#' * 30)
                 print(
                     'Couldn\'t find the "Check for tasks" button :(\n'
-                    'Please re-run the command  :)'
+                    'Please re-run the command'
                 )
                 print('#' * 30)
                 sys.exit(2)
-
-            # wait for the reload, just for safety
-            sleep(0.5)
-
-            take_task = self.get_if_exists_by_xpath(
-                '//*[@id="appContainer"]/div/div[2]/div/div/div[2]/div/div/div[2]'
-                '/div[3]/button'
-            )
-            if take_task:
-                print(' ' * 60, end='\r')
-                print(' Hurray! Found tasks!!!')
-                playsound('./sounds/three-beeps.mp3')
-                found_tasks = True
-                take_task.click()
-            else:
-                print(' ' * 60, end='\r')
-                print(
-                    f' (#{number_of_iterations}) No tasks found... trying again!',
-                    end='\r',
-                )
 
         agree_disclosure_pop_up = self.get_if_exists_by_xpath(
             '//*[@id="appContainer"]/div/div[2]/div/div/dialog/div/div/div/button[1]/span'
