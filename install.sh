@@ -16,9 +16,9 @@ read QC_PASSWORD
 echo "Please enter your QC_URL: "
 read QC_URL
 
-echo "QC_EMAIL = $QC_EMAIL" >> secrets.py
-echo "QC_PASSWORD = $QC_PASSWORD" >> secrets.py
-echo "QC_URL = $QC_URL" >> secrets.py
+echo "QC_EMAIL = \"$QC_EMAIL\"" >> secrets.py
+echo "QC_PASSWORD = \"$QC_PASSWORD\"" >> secrets.py
+echo "QC_URL = \"$QC_URL\"" >> secrets.py
 
 echo "Configuration completed!"
 
