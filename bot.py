@@ -28,7 +28,7 @@ class NetflixQCBot:
 
     def login(self):
         print(' ' * 60, end='\r')
-        print(' Login in ...', end='\r')
+        print(' logging in ...', end='\r')
         sleep(2)
         email = self.driver.find_element_by_xpath('//*[@id="username"]')
         email.send_keys(QC_EMAIL)
