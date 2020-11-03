@@ -1,0 +1,4 @@
+playsound
+pyttsx3
+selenium
+urllib3
