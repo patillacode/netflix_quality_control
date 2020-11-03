@@ -42,7 +42,7 @@ class NetflixQCBot:
     def click_pick_a_task(self):
         print(' ' * 60, end='\r')
         print(' Going to the picking tasks area ...', end='\r')
-        sleep(2)
+        sleep(3)
         pick_a_task = self.driver.find_element_by_xpath(
             '//*[@id="appContainer"]/div/div[2]/div/div[1]/div[2]/div/button'
         )
