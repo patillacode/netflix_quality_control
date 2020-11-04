@@ -1,5 +1,4 @@
 import os
-import sys
 
 from playsound import playsound
 from random import randrange
@@ -10,6 +9,19 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import DesiredCapabilities
 
 from secrets import QC_EMAIL, QC_PASSWORD, QC_URL
+
+
+def print_banner():
+    os.system('clear')
+    print(
+        '\n'
+        '    _/      _/              _/        _/_/        _/_/_/    _/_/_/                _/\n'
+        '   _/_/    _/    _/_/    _/_/_/_/  _/    _/    _/          _/    _/    _/_/    _/_/_/_/\n'
+        '  _/  _/  _/  _/_/_/_/    _/      _/  _/_/    _/          _/_/_/    _/    _/    _/\n'
+        ' _/    _/_/  _/          _/      _/    _/    _/          _/    _/  _/    _/    _/\n'
+        '_/      _/    _/_/_/      _/_/    _/_/  _/    _/_/_/    _/_/_/      _/_/        _/_/\n'
+        '\n                                by PatillaCode\n\n'
+    )
 
 
 class NetflixQCBot:
@@ -53,6 +65,35 @@ class NetflixQCBot:
             element = False
         return element
 
+    def take_task(self):
+        take_task = self.get_if_exists_by_xpath(
+            '//*[@id="appContainer"]/div/div[2]/div/div/div[2]/div/div/div[2]'
+            '/div[3]/button'
+        )
+
+        if take_task:
+            take_task.click()
+            print(' ' * 60, end='\r')
+            print(' Hurray! Found tasks!!!')
+            playsound('./sounds/three-beeps.mp3')
+            sleep(1)
+            agree_disclosure_pop_up = self.get_if_exists_by_xpath(
+                '//*[@id="appContainer"]/div/div[2]/div/div/dialog/div/div/div/button[1]/span'
+            )
+            if agree_disclosure_pop_up:
+                agree_disclosure_pop_up.click()
+
+            return True
+
+        else:
+            print(' ' * 60, end='\r')
+            print(
+                ' No tasks found... trying again!',
+                end='\r',
+            )
+            sleep(1)
+            return False
+
     def check_for_tasks(self):
         found_tasks = False
         number_of_iterations = 0
@@ -84,39 +125,11 @@ class NetflixQCBot:
                 # wait for the reload, just for safety
                 sleep(0.5)
 
-                take_task = self.get_if_exists_by_xpath(
-                    '//*[@id="appContainer"]/div/div[2]/div/div/div[2]/div/div/div[2]'
-                    '/div[3]/button'
-                )
-                if take_task:
-                    take_task.click()
-                    print(' ' * 60, end='\r')
-                    print(' Hurray! Found tasks!!!')
-                    playsound('./sounds/three-beeps.mp3')
-                    found_tasks = True
-                else:
-                    print(' ' * 60, end='\r')
-                    print(
-                        f' (#{number_of_iterations}) No tasks found... trying again!',
-                        end='\r',
-                    )
-            else:
-                print('#' * 30)
-                print(
-                    'Couldn\'t find the "Check for tasks" button :(\n'
-                    'Please re-run the command'
-                )
-                print('#' * 30)
-                sys.exit(2)
-
-        agree_disclosure_pop_up = self.get_if_exists_by_xpath(
-            '//*[@id="appContainer"]/div/div[2]/div/div/dialog/div/div/div/button[1]/span'
-        )
-        if agree_disclosure_pop_up:
-            agree_disclosure_pop_up.click()
+            found_tasks = self.take_task()
 
 
-os.system('clear')
-bot = NetflixQCBot()
-bot.login()
-bot.check_for_tasks()
+if __name__ == '__main__':
+    print_banner()
+    bot = NetflixQCBot()
+    bot.login()
+    bot.check_for_tasks()
