@@ -1,5 +1,6 @@
 import os
 
+from fabulous import text
 from playsound import playsound
 from random import randrange
 from time import sleep
@@ -13,15 +14,8 @@ from secrets import QC_EMAIL, QC_PASSWORD, QC_URL
 
 def print_banner():
     os.system('clear')
-    print(
-        '\n'
-        '    _/      _/              _/        _/_/        _/_/_/    _/_/_/                _/\n'
-        '   _/_/    _/    _/_/    _/_/_/_/  _/    _/    _/          _/    _/    _/_/    _/_/_/_/\n'
-        '  _/  _/  _/  _/_/_/_/    _/      _/  _/_/    _/          _/_/_/    _/    _/    _/\n'
-        ' _/    _/_/  _/          _/      _/    _/    _/          _/    _/  _/    _/    _/\n'
-        '_/      _/    _/_/_/      _/_/    _/_/  _/    _/_/_/    _/_/_/      _/_/        _/_/\n'
-        '\n                                by PatillaCode\n\n'
-    )
+    print(text.Text("NeTQCBot", color='green', shadow=True, skew=3))
+    print('\t\t\t\t\t\tby PatillaCode')
 
 
 class NetflixQCBot:

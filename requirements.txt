@@ -1,3 +1,4 @@
+fabulous
 playsound
 pyttsx3
 selenium
