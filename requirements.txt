@@ -1,5 +1,5 @@
 fabulous
 playsound
-pyttsx3
+# pyttsx3
 selenium
 urllib3

@@ -18,8 +18,7 @@ def print_banner():
         print(text.Text("NeTQCBot", color='green', shadow=True, skew=3))
     except:
         print('NeTQCBot')
-    else:
-        print('\t\t\t\t\t\tby PatillaCode')
+    print('\t\t\t\t\t\tby PatillaCode')
 
 
 class NetflixQCBot:
