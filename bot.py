@@ -14,8 +14,12 @@ from secrets import QC_EMAIL, QC_PASSWORD, QC_URL
 
 def print_banner():
     os.system('clear')
-    print(text.Text("NeTQCBot", color='green', shadow=True, skew=3))
-    print('\t\t\t\t\t\tby PatillaCode')
+    try:
+        print(text.Text("NeTQCBot", color='green', shadow=True, skew=3))
+    except:
+        print('NeTQCBot')
+    else:
+        print('\t\t\t\t\t\tby PatillaCode')
 
 
 class NetflixQCBot:
