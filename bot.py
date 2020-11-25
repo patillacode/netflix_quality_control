@@ -1,7 +1,7 @@
 import os
 
+# from playsound import playsound
 from fabulous import text
-from playsound import playsound
 from random import randrange
 from time import sleep
 
@@ -72,7 +72,7 @@ class NetflixQCBot:
             take_task.click()
             print(' ' * 60, end='\r')
             print(' Hurray! Found tasks!!!')
-            playsound('./sounds/three-beeps.mp3')
+            # playsound('./sounds/three-beeps.mp3')
             sleep(1)
             agree_disclosure_pop_up = self.get_if_exists_by_xpath(
                 '//*[@id="appContainer"]/div/div[2]/div/div/dialog/div/div/div/button[1]/span'

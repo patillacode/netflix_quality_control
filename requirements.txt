@@ -1,5 +1,6 @@
-fabulous
-playsound
+# fabulous
+# playsound
+# Pillow
 # pyttsx3
 selenium
 urllib3
