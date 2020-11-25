@@ -73,7 +73,7 @@ class NetflixQCBot:
             print(' ' * 60, end='\r')
             print(' Hurray! Found tasks!!!')
             # playsound('./sounds/three-beeps.mp3')
-            sleep(1)
+            sleep(0.5)
             agree_disclosure_pop_up = self.get_if_exists_by_xpath(
                 '//*[@id="appContainer"]/div/div[2]/div/div/dialog/div/div/div/button[1]/span'
             )
