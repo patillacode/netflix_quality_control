@@ -94,11 +94,12 @@ class NetflixQCBot:
     def check_for_tasks(self):
         found_tasks = False
         number_of_iterations = 0
+
         while not found_tasks:
             number_of_iterations += 1
 
-            # wait between 0.9 and 3.5 seconds
-            wait_time = randrange(9, 35) / 10
+            # wait between 0.9 and 2.5 seconds
+            wait_time = randrange(9, 25) / 10
 
             print(' ' * 60, end='\r')
             print(
@@ -123,6 +124,16 @@ class NetflixQCBot:
                 sleep(0.5)
 
             found_tasks = self.take_task()
+            if found_tasks:
+                user_answer = input(
+                    'Press enter if you want to keep checking, press anything else to '
+                    'stop the program: '
+                )
+                if user_answer == '':
+                    found_tasks = False
+                    self.driver.get(QC_URL)
+                    sleep(2)
+                    self.click_pick_a_task()
 
 
 if __name__ == '__main__':
