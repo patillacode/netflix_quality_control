@@ -98,8 +98,8 @@ class NetflixQCBot:
         while not found_tasks:
             number_of_iterations += 1
 
-            # wait between 0.9 and 2.5 seconds
-            wait_time = randrange(9, 25) / 10
+            # wait between 1.0 and 3.5 seconds
+            wait_time = randrange(10, 35) / 10
 
             print(' ' * 60, end='\r')
             print(
