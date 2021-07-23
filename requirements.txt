@@ -2,6 +2,7 @@
 # playsound
 # Pillow
 # pyttsx3
+gif-for-cli
 selenium
 urllib3
 requests
