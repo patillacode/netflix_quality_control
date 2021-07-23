@@ -6,3 +6,4 @@ gif-for-cli
 selenium
 urllib3
 requests
+yaspin
