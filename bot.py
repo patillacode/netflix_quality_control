@@ -71,8 +71,6 @@ def get_task(session, data, spinner):
 
     response = session.post(QC_TAKE_TASK_URL, json=payload, headers=headers)
     if response.status_code != 200:
-        # print('Something went wrong, you gotta call G! Show him the text below.\n')
-        # print(response.__dict__)
         spinner.text = 'Task is no longer available, looking for more...'
         sleep(3)
         return False
@@ -173,8 +171,7 @@ def main():
             json_response = request_available_tasks(session)
 
             if json_response['qcTasks']:
-                found_task = True
-                get_task(session, json_response, spinner)
+                found_task = get_task(session, json_response, spinner)
             else:
                 wait_time = random.randrange(10, 25) / 10
                 spinner.text = (
