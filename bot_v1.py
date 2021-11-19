@@ -10,47 +10,44 @@ import requests
 from gif_for_cli import execute
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.common.by import By
 from yaspin import kbi_safe_yaspin
 from yaspin.spinners import Spinners
 
 
-def login_and_get_cookie(driver, spinner):
-    # capabilities = DesiredCapabilities.CHROME
-    # capabilities['pageLoadStrategy'] = 'eager'
-    # driver = webdriver.Chrome(desired_capabilities=capabilities)
+def get_form_action_and_cookie(spinner):
+    spinner.text = 'Initializing...'
+    capabilities = DesiredCapabilities.CHROME
+    capabilities['pageLoadStrategy'] = 'eager'
+    driver = webdriver.Chrome(desired_capabilities=capabilities)
     # driver.set_window_position(1150, 0)
     spinner.text = f'Accessing {QC_URL} ...'
     driver.get(QC_URL)
     sleep(3)
-    email_input = driver.find_element(by=By.XPATH, value='//*[@id="user-identifier"]')
-    email_input.send_keys(QC_EMAIL)
-    sleep(1)
-    continue_button = driver.find_element(by=By.XPATH, value='//*[@id="btn-continue"]')
-    continue_button.click()
 
-    spinner.text = 'Second step, entering password ...'
-    sleep(3)
-    password = driver.find_element(by=By.XPATH, value='//*[@id="field-password"]')
-    password.send_keys(QC_PASSWORD)
-    sleep(1)
-    spinner.text = 'Logging in...'
-    login_button = driver.find_element(by=By.XPATH, value='//*[@id="btn-login"]')
-    login_button.click()
-    sleep(3)
-    cookie = driver.get_cookie('wall-e_auth_openidc_session')
+    spinner.text = 'Getting login URL...'
+    form_action = driver.find_element_by_xpath('/html/body/div/div/form').get_attribute(
+        'action'
+    )
+    sleep(2)
+
+    spinner.text = 'Getting cookie...'
+    cookie = driver.get_cookie('PF')
     driver.close()
-    return cookie
+
+    return form_action, cookie
 
 
-def get_task(session, cookie, data, spinner):
+def get_task(session, data, spinner):
     headers = {
         'accept': 'application/json, text/plain, */*',
         'accept-encoding': 'gzip, deflate, br',
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
         # 'content-length': '1031',
         'content-type': 'application/json;charset=UTF-8',
-        'cookie': (f'wall-e_auth_openidc_session={cookie["value"]}'),
+        'cookie': (
+            'wall-e_auth_openidc_session='
+            f'{session.cookies.get_dict()["wall-e_auth_openidc_session"]}'
+        ),
         'origin': 'https://assetqc.netflixstudios.com',
         'referer': 'https://assetqc.netflixstudios.com/my-tasks',
         'sec-fetch-dest': 'empty',
@@ -89,24 +86,52 @@ def gif():
     execute.execute(os.environ, [f'./gifs/{random_gif}'], sys.stdout)
 
 
-def request_available_tasks(session, cookie):
+def get_login_payload_and_headers(cookie):
     headers = {
-        'accept': 'application/json, text/plain, */*',
-        'accept-encoding': 'gzip, deflate, br',
-        'accept-language': 'en-GB,en;q=0.9',
-        'cookie': f'wall-e_auth_openidc_session={cookie["value"]}',
-        'referer': 'https://assetqc.netflixstudios.com/my-tasks',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'sec-gpc': '1',
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+        'Host': 'meechum.netflix.com',
+        'Connection': 'keep-alive',
+        # 'Content-Length': '139',
+        'Cache-Control': 'max-age=0',
+        'Upgrade-Insecure-Requests': '1',
+        'Origin': 'https://meechum.netflix.com',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': (
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Brave Chrome/91.0.4472.164 Safari/537.36'
+        ),
+        'Accept': (
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,'
+            'image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+        ),
+        'Sec-GPC': '1',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-User': '?1',
+        'Sec-Fetch-Dest': 'document',
+        'Referer': 'https://meechum.netflix.com/',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-GB,en;q=0.9',
+        'Cookie': f'{cookie["name"]}={cookie["value"]}',
     }
-    response = session.get(QC_REQUEST_TASKS_URL, headers=headers)
+    payload = {
+        'pf.username': QC_EMAIL,
+        'pf.pass': QC_PASSWORD,
+        'pf.ok': 'clicked',
+        'pf.cancel': '',
+        'pf.adapterId': 'nflxPartnerDirectoryLogin',
+        'pf.alternateAuthnSystem': '',
+    }
+
+    return payload, headers
+
+
+def request_available_tasks(session):
+    response = session.get(QC_REQUEST_TASKS_URL)
 
     if response.status_code != 200:
         print(f'\n Something went wrong, please restart [{response.status_code}]')
         return False
+
     return response.json()
 
 
@@ -131,24 +156,22 @@ def get_random_spinner():
 def main():
     spinner = get_random_spinner()
     spinner.start()
-    spinner.text = 'Initializing...'
-
-    capabilities = DesiredCapabilities.CHROME
-    capabilities['pageLoadStrategy'] = 'eager'
-    driver = webdriver.Chrome(desired_capabilities=capabilities)
-    cookie = login_and_get_cookie(driver, spinner)
 
     # Use 'with' to ensure the session context is closed after use.
     with requests.Session() as session:
+        form_action_url, cookie = get_form_action_and_cookie(spinner)
+        payload, headers = get_login_payload_and_headers(cookie)
+        session.post(form_action_url, data=payload, headers=headers)
+
         found_task = False
         iteration = 0
 
         while not found_task:
             iteration += 1
-            json_response = request_available_tasks(session, cookie)
+            json_response = request_available_tasks(session)
 
             if json_response['qcTasks']:
-                found_task = get_task(session, cookie, json_response, spinner)
+                found_task = get_task(session, json_response, spinner)
             else:
                 wait_time = random.randrange(10, 25) / 10
                 spinner.text = (
