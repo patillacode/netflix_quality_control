@@ -15,7 +15,7 @@ set -o pipefail
 
 ZIPFILEPATH="/tmp/chromedriver-$VERSION.zip"
 echo "Downloading to $ZIPFILEPATH"
-curl -f --silent "https://chromedriver.storage.googleapis.com/$VERSION/chromedriver_mac64_m1.zip" > "$ZIPFILEPATH"
+curl -f --silent "https://chromedriver.storage.googleapis.com/$VERSION/chromedriver_mac_arm64.zip" > "$ZIPFILEPATH"
 
 BINFILEPATH="/usr/local/bin/chromedriver-$VERSION"
 echo "Extracting to $BINFILEPATH"
